@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - VirtualMusicInstrument</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+</head>
+<body>
+    <header class="header">
+        <h1>User Profile</h1>
+        <nav>
+            <ul>
+                <!-- <li><a href="/">Home</a></li> -->
+                <li><a href="/gobacktodashboard">Dashboard</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="profile-section">
+            <h2>Profile Details</h2>
+            <form action="/profile" method="POST" enctype="multipart/form-data">
+                <div class="profile-info">
+                    {% if user %}
+                    <div class="col">
+
+                        <div class="profile-details">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name" value="{{ user.name }}" required>
+    
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                            
+                            {% if text %}
+                            <p>{{ text }}</p>
+                            {% endif %}
+                            <button id="changePass">Change Password</button>
+                            
+                            <button type="submit">Save Changes</button>
+                        </div>
+                        <div class="profile-image">
+                            <img src="{{ user.image_url }}" alt="Profile Image" style="width: 150px; height: 150px;"> <br><br>
+                            <label for="profile_image">Profile Image:</label>
+                            <input type="file" id="profile_image" name="profile_image"> <br>    
+                        </div>
+
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="navigation-buttons">
+                    <!-- <a href="/gobacktodashboard" class="gobacktodashboard">Go to Dashboard</a>
+                    <a href="/logout" class="gobacktodashboard">Log Out</a> -->
+                    <a href="/saved_recordings" class="gobacktodashboard">Saved Recordings</a>
+                </div>
+            </form>
+            <div class="changePassword">
+                <form action="/changePassword" method="post">
+                    <label for="oldp">Old Password</label> : <input type="password" name="oldp" id="oldp" required> <br>
+                    <label for="newp">New Password</label> : <input type="password" name="newp" id="newp" required> <br>
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+<script>
+    var changePassword = document.querySelector(".changePassword");
+    var changePassButton = document.querySelector("#changePass");
+    var isChangePassOpen = false
+    changePassButton.addEventListener("click", function(event) {
+            // Check if the clicked element is the My Account link
+        
+            event.preventDefault();
+            if (isChangePassOpen) {
+                console.log("Closing");
+                changePassword.style.display = "none";
+                isChangePassOpen = false;
+            } else {
+                console.log("Opening");
+                changePassword.style.display = "block";
+                isChangePassOpen = true;
+            }
+        });
+
+</script>
+</html>

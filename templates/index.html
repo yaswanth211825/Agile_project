@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>VirtualMusicInstrument</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Virtual Music Instrument</h1>
+    <div class="logincontainer">
+        <h2><a href="/">Login</a> / <a href="signup.html">SignUp</a></h2>
+        <form action="/dashboard" method="post" id="loginform">
+            <input class="input-field" name="email" type="email" placeholder="example@gmail.com">
+            <input class="input-field" name="pass" type="password" placeholder="password">
+            <input class="submit-button" type="submit" value="Submit">
+        </form>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+</body>
+</html>

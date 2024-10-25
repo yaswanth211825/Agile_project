@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - VirtualMusicInstrument</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <style>
+        .header {
+            background-image: url("{{ url_for('static', filename='headerImage.png') }}");
+            color: #0c0c0c;
+            padding-top: 70px;
+            min-height: 100px;
+            border-bottom: #77aaff 3px solid;
+        }
+
+        .header nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .header nav ul li {
+            display: inline;
+            margin-right: 15px;
+        }
+
+        .header nav ul li a {
+            color: #0b0b0b;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        .profile-icon img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .instrument-section {
+            position: relative;
+            padding: 20px;
+        }
+
+        .profile-icon-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .activity {
+            padding: 20px;
+        }
+
+        .activity ul {
+            padding-left: 0;
+            list-style-type: none;
+        }
+
+        .activity li {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Virtual Music Instrument Dashboard</h1>
+            <nav>
+                <ul>
+                    <!-- <li><a href="/">Home</a></li> -->
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <section class="instrument-section">
+                <div class="profile-icon-container">
+                    <a href="/profile">
+                        <span class="profile-icon">
+                            <img src="{{ url_for('static', filename='icons/profile_icon.png') }}" alt="Profile">
+                        </span>
+                    </a>
+                </div>
+                <h2>Your Instruments</h2>
+                <div class="instrument-list">
+                    <div class="instrument-item">
+                        <h3>Piano</h3>
+                        <a href="#" onclick="startPlaying('Piano', '/playPiano')">Play</a>
+                    </div>
+                    <div class="instrument-item">
+                        <h3>Guitar</h3>
+                        <a href="#" onclick="startPlaying('Guitar', '/playGuitar')">Play</a>
+                    </div>
+                    <div class="instrument-item">
+                        <h3>Drums</h3>
+                        <a href="#" onclick="startPlaying('Drums', '/playDrums')">Play</a>
+                    </div>
+                </div>
+            </section>
+            <section class="activity">
+                <h2>Recent Activity</h2>
+                <ul id="activity-list">
+                    <!-- Activity items will be dynamically inserted here -->
+                </ul>
+            </section>
+        </main>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadActivities();
+            setInterval(loadActivities, 5000); // Update every 5 seconds
+        });
+
+        function loadActivities() {
+            fetch('/recent_activities')
+                .then(response => response.json())
+                .then(data => {
+                    const activityList = document.getElementById('activity-list');
+                    activityList.innerHTML = ''; // Clear the existing list
+                    data.forEach(activity => {
+                        const newActivityItem = document.createElement('li');
+                        newActivityItem.textContent = activity;
+                        activityList.appendChild(newActivityItem);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function startPlaying(instrument, url) {
+            const startTime = new Date();
+            const startData = {
+                instrument: instrument,
+                startTime: startTime.getTime()
+            };
+
+            // Save start time to localStorage
+            localStorage.setItem('currentSession', JSON.stringify(startData));
+
+            // Redirect to the playing page
+            window.location.href = url;
+        }
+
+        function stopPlaying() {
+            const sessionData = JSON.parse(localStorage.getItem('currentSession'));
+            if (!sessionData) {
+                return;
+            }
+
+            const endTime = new Date();
+            const duration = Math.round((endTime.getTime() - sessionData.startTime) / 1000); // Duration in seconds
+            const startDate = new Date(sessionData.startTime);
+            const dateString = startDate.toLocaleDateString();
+            const timeString = startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const newActivity = `Played ${sessionData.instrument} for ${duration} seconds on ${dateString} at ${timeString}`;
+
+            // Save activity to localStorage
+            saveActivity(newActivity);
+
+            // Display the new activity
+            displayActivity(newActivity);
+
+            // Clear the current session
+            localStorage.removeItem('currentSession');
+        }
+
+        function saveActivity(activity) {
+            let activities = JSON.parse(localStorage.getItem('activities')) || [];
+            activities.unshift(activity);
+            localStorage.setItem('activities', JSON.stringify(activities));
+        }
+
+        function displayActivity(activity) {
+            const activityList = document.getElementById('activity-list');
+            const newActivityItem = document.createElement('li');
+            newActivityItem.textContent = activity;
+            activityList.insertBefore(newActivityItem, activityList.firstChild);
+        }
+
+        // Call stopPlaying when the page is loaded, if there is an ongoing session
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('currentSession')) {
+                stopPlaying();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+.header {
+    background-image: url("{{ url_for('static', filename='headerImage.png') }}");
+    background-color: #BAE9F3;
+    color: #080808;
+    padding-top: 30px;
+    min-height: 70px;
+    border-bottom: #77aaff 3px solid;
+    text-align: center
+}
+
+.header nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.header nav ul li {
+    display: inline;
+    margin-right: 15px;
+}
+
+.header nav ul li a {
+    color: #080808;
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center
+}
+
+.profile-section {
+    padding: 20px;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+}
+
+.profile-image {
+    margin: 20px;
+    position: relative;
+    left: 250px;
+}
+
+.profile-image img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+}
+
+.profile-details {
+    display: flex;
+    flex-direction: column;
+}
+.col {
+    display: flex;
+    flex-direction: row;
+}
+
+.profile-details label {
+    margin-top: 10px;
+}
+
+.profile-details input {
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.profile-details button {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #77aaff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.profile-details button:hover {
+    background-color: #5591e0;
+}
+
+ .gobacktodashboard  {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.gobacktodashboard:hover {
+    background-color: #0056b3;
+}
+
+/*.logout  {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.logout:hover {
+    background-color: #0056b3;
+} */
+
+
+.changePassword{
+    display: none;
+}

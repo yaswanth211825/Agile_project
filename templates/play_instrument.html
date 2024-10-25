@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play Instrument</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <style>
+        .controls {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: space-around;
+            width: 80%;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        video {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Playing {{ current_instrument }}</h1>
+        </header>
+        <main>
+            <div>
+                <img id="video" src="{{ url_for('video_feed') }}" style="width: 100%; height: auto;" />
+            </div>
+            <div class="controls">
+                <!-- <button onclick="switchInstrument('piano')">Piano</button> -->
+                 <a href="/playPiano">Piano</a>
+                 <a href="/playGuitar">Guitar</a>
+                 <a href="/playDrums">Drums</a>
+                <!-- <button onclick="switchInstrument('guitar')">Guitar</button>
+                <button onclick="switchInstrument('drums')">Drums</button> -->
+                <button id="recordButton" onclick="toggleRecording()">Record</button>
+                <button onclick="pausePlaying()">Pause</button>
+                <button onclick="quitPlaying()">Quit</button>
+            </div>
+        </main>
+    </div>
+    <script>
+        let isRecording = false;
+        let startTime = null;
+        let currentInstrument = '{{ current_instrument }}';
+        let recordedNotes = [];
+        let recordingInterval = null;
+
+        function switchInstrument(instrument) {
+            fetch(`/switch_instrument/${instrument}`, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('Failed to switch instrument.');
+                }
+            })
+            .then(data => {
+                console.log(data);
+                document.querySelector('header h1').innerText = `Playing ${instrument}`;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+
+        let mediaRecorder;
+let audioChunks = [];
+let audioBlob;
+
+function startRecording() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Your browser does not support audio recording.');
+        return;
+    }
+
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+            mediaRecorder.onstop = () => {
+                audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                audioChunks = [];
+                uploadRecording(audioBlob);
+            };
+            console.log('Recording started...');
+        })
+        .catch(error => console.error('Error accessing media devices.', error));
+}
+
+function stopRecording() {
+    if (mediaRecorder) {
+        mediaRecorder.stop();
+        console.log('Recording stopped.');
+    }
+}
+
+function uploadRecording(blob) {
+    const formData = new FormData();
+    formData.append('recording', blob, 'recording.wav');
+
+    fetch('/upload_recording', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            console.log('Recording uploaded successfully.');
+        } else {
+            console.error('Failed to upload recording.');
+        }
+    })
+    .catch(error => console.error('Error uploading recording:', error));
+}
+
+function toggleRecording() {
+    if (isRecording) {
+        stopRecording();
+        document.getElementById('recordButton').innerText = 'Record';
+        isRecording = false;
+    } else {
+        startRecording();
+        document.getElementById('recordButton').innerText = 'Stop Recording';
+        isRecording = true;
+    }
+}
+
+        function pausePlaying() {
+            alert('Paused. This functionality is not yet implemented.');
+            // Additional logic for pausing can be added here
+        }
+
+        function quitPlaying() {
+            if (isRecording) {
+                stopRecording();
+            }
+            fetch('/quit', { method: 'POST' })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/gobacktodashboard';
+                } else {
+                    alert('Failed to quit.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

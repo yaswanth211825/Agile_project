@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Music Instrument - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Virtual Music Instrument</h1>    
+    <div class="home-container">
+        <!-- User Login Box -->
+        <div class="box" onclick="location.href= url_for('index')">
+            <h2>Login as User</h2>
+            <p>Click here to log in as a user.</p>
+        </div>
+        
+        <!-- Admin Login Box -->
+        <div class="box" onclick="location.href=url_for('adminlogin')">
+            <h2>Login as Admin</h2>
+            <p>Click here to log in as an admin.</p>
+        </div>
+    </div>
+</body>
+</html>

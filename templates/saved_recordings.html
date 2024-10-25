@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Recordings - VirtualMusicInstrument</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='recordings.css') }}">
+</head>
+<body>
+    <header class="header">
+        <h1>Saved Recordings</h1>
+        <nav>
+            <ul>
+                <!-- <li><a href="/">Home</a></li> -->
+                <li><a href="/gobacktodashboard">Dashboard</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="recordings-section">
+            <h1>Saved Recordings</h1>
+            <ul>
+                {% for recording in recordings %}
+                    <li>
+                        <a href="{{ url_for('download_recording', recording_id=recording.id) }}">
+                            {{ recording.filename }}
+                        </a>
+                    </li>
+                {% endfor %}
+    </ul>
+        </section>
+    </main>
+</body>
+</html>

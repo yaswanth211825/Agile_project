@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Instrument Switcher</title>
+</head>
+<body>
+    <h1>Virtual Instrument</h1>
+    <div>
+        <button onclick="switchInstrument('piano')">Piano</button>
+        <button onclick="switchInstrument('guitar')">Guitar</button>
+        <button onclick="switchInstrument('drums')">Drums</button>
+    </div>
+    <div>
+        <button onclick="toggleCamera()">Toggle Camera</button>
+        <button onclick="toggleRecording()">Toggle Recording</button>
+        <button onclick="saveRecording()">Save Recording</button>
+    </div>
+    <div>
+        <img src="{{ url_for('video_feed') }}" width="800" />
+    </div>
+
+    <script>
+        function switchInstrument(instrument) {
+            fetch('/switch_instrument', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `instrument=${instrument}`
+            }).then(response => {
+                if (response.ok) {
+                    alert(`Switched to ${instrument}`);
+                } else {
+                    alert('Failed to switch instrument');
+                }
+            });
+        }
+
+        function toggleCamera() {
+            fetch('/toggle_camera', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            }).then(response => {
+                if (response.ok) {
+                    response.text().then(text => alert(text));
+                } else {
+                    alert('Failed to toggle camera');
+                }
+            });
+        }
+
+        function toggleRecording() {
+            fetch('/toggle_recording', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            }).then(response => response.json()).then(data => {
+                alert(`Recording ${data.recording ? 'started' : 'stopped'}`);
+            }).catch(() => {
+                alert('Failed to toggle recording');
+            });
+        }
+
+        function saveRecording() {
+            fetch('/save_recording', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            }).then(response => {
+                if (response.ok) {
+                    alert('Recording saved');
+                } else {
+                    alert('Failed to save recording');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
